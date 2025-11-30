@@ -63,6 +63,84 @@ if [ -f "startserver.sh" ]; then
     exit 0
 fi
 
+# FTB / Custom Install Script Detection
+if [ -f "install.sh" ]; then
+    echo "Script de instalação 'install.sh' detectado (Padrão FTB)."
+    TYPE="CUSTOM"
+    VERSION="custom"
+    
+    # --- Configurações Padrão via Cache (CUSTOM) ---
+    CACHE_CONFIG_DIR="cache/config"
+    mkdir -p "$CACHE_CONFIG_DIR"
+    CACHE_CONFIG_FILE="$CACHE_CONFIG_DIR/$TYPE.config"
+
+    if [ ! -f "$CACHE_CONFIG_FILE" ]; then
+        echo "Criando modelo de configuração padrão em $CACHE_CONFIG_FILE..."
+        echo "MIN_RAM=4G" > "$CACHE_CONFIG_FILE"
+        echo "MAX_RAM=8G" >> "$CACHE_CONFIG_FILE"
+        echo 'SERVER_ARGS=""' >> "$CACHE_CONFIG_FILE"
+        echo 'JAVA_ARGS=""' >> "$CACHE_CONFIG_FILE"
+    fi
+    
+    # Cria server.config
+    echo "Gerando server.config para modpack..."
+    echo "VERSION=$VERSION" > "$CONFIG_FILE"
+    echo "TYPE=$TYPE" >> "$CONFIG_FILE"
+    
+    # Mescla defaults
+    while IFS= read -r line; do
+        echo "$line" >> "$CONFIG_FILE"
+    done < "$CACHE_CONFIG_FILE"
+    
+    # EULA
+    if [ ! -f "eula.txt" ]; then
+        echo "eula=true" > eula.txt
+        echo "eula.txt criado."
+    fi
+
+    chmod +x install.sh
+    echo "Executando script de download do instalador..."
+    ./install.sh
+    
+    # Encontra o binário que acabou de ser baixado
+    # O script instala algo como ftb-server-installer_ID_VER
+    INSTALLER_BIN=$(find . -maxdepth 1 -name "ftb-server-installer*" -type f -executable | sort -V | tail -n 1)
+    
+    if [ -n "$INSTALLER_BIN" ]; then
+        echo "Instalador encontrado: $INSTALLER_BIN"
+        echo "Executando instalador do servidor (Forçando instalação)..."
+        # Usa --force para ignorar avisos de diretório não vazio
+        "$INSTALLER_BIN" --auto --force
+        
+        # Tenta encontrar o script de inicialização gerado
+        # Busca por start.sh, run.sh ou ServerStart.sh (comum em FTB antigo)
+        START_SCRIPT=$(find . -maxdepth 1 \( -name "start.sh" -o -name "run.sh" -o -name "ServerStart.sh" \) -type f -executable | head -n 1)
+        
+        # Se não achou executável, tenta achar qualquer arquivo com esses nomes (as vezes vem sem permissão de execução)
+        if [ -z "$START_SCRIPT" ]; then
+             START_SCRIPT=$(find . -maxdepth 1 \( -name "start.sh" -o -name "run.sh" -o -name "ServerStart.sh" \) -type f | head -n 1)
+             if [ -n "$START_SCRIPT" ]; then
+                 echo "Script encontrado sem permissão de execução: $START_SCRIPT"
+                 chmod +x "$START_SCRIPT"
+             fi
+        fi
+        
+        if [ -n "$START_SCRIPT" ]; then
+            JAR_PATH=$(readlink -f "$START_SCRIPT")
+            echo "Script de inicialização detectado: $JAR_PATH"
+            echo "JAR_PATH=$JAR_PATH" >> "$CONFIG_FILE"
+        else
+            echo "Erro: Não foi possível encontrar o script de inicialização (start.sh/run.sh)."
+            echo "Por favor, verifique os arquivos e configure JAR_PATH no server.config manualmente."
+        fi
+    else
+        echo "Erro: O binário do instalador (ftb-server-installer) não foi encontrado após rodar install.sh."
+    fi
+
+    echo "Processo de instalação finalizado. Use ./init-server.sh para iniciar."
+    exit 0
+fi
+
 # Verifica se o arquivo de configuração existe e carrega as variáveis
 if [ -f "$CONFIG_FILE" ]; then
     echo "Lendo configuração de $CONFIG_FILE..."
