@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONFIG_FILE="server.config"
+
 # Modpack / Custom Script Detection
 if [ -f "startserver.sh" ]; then
     echo "Script de inicialização 'startserver.sh' detectado."
@@ -60,8 +62,6 @@ if [ -f "startserver.sh" ]; then
     echo "Instalação concluída. Use ./init-server.sh para iniciar."
     exit 0
 fi
-
-CONFIG_FILE="server.config"
 
 # Verifica se o arquivo de configuração existe e carrega as variáveis
 if [ -f "$CONFIG_FILE" ]; then

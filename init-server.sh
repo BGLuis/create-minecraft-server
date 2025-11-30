@@ -120,16 +120,30 @@ if [ "$TYPE" == "FORGE" ] || [ "$TYPE" == "NEOFORGE" ]; then
     fi
 fi
 
-# --- Execução Padrão (Vanilla, Paper, Fabric, Legacy Forge) ---
-echo "Iniciando servidor Java..."
-echo " > Jar: $JAR_PATH"
-echo " > Memória: $MIN_RAM - $MAX_RAM"
-echo " > Argumentos Java: $JAVA_ARGS"
+# --- Execução Padrão (Vanilla, Paper, Fabric, Legacy Forge, Custom Scripts) ---
+echo "Iniciando servidor..."
+echo " > Arquivo: $JAR_PATH"
+echo " > Memória (para Jars gerenciados): $MIN_RAM - $MAX_RAM"
 
-# Executa o servidor com screen se disponível
-# Nota: $JAVA_ARGS não está entre aspas para permitir múltiplos argumentos
-if [ -n "$CMD_PREFIX" ]; then
-    exec $CMD_PREFIX "java -Xms${MIN_RAM} -Xmx${MAX_RAM} $JAVA_ARGS -jar \"$JAR_PATH\" $SERVER_ARGS || { echo 'Servidor crashou ou parou.'; read -p 'Pressione Enter para fechar...' ; }"
+# Verifica se é um script shell (.sh) ou um JAR (.jar)
+if [[ "$JAR_PATH" == *.sh ]]; then
+    echo "Detectado script de inicialização personalizado."
+    chmod +x "$JAR_PATH"
+    
+    if [ -n "$CMD_PREFIX" ]; then
+        # Executa script dentro do screen
+        exec $CMD_PREFIX "$JAR_PATH $SERVER_ARGS || { echo 'Servidor crashou ou parou.'; read -p 'Pressione Enter para fechar...' ; }"
+    else
+        # Executa diretamente
+        "$JAR_PATH" $SERVER_ARGS
+    fi
 else
-    java -Xms"${MIN_RAM}" -Xmx"${MAX_RAM}" $JAVA_ARGS -jar "$JAR_PATH" $SERVER_ARGS
+    # Execução Java Padrão (para arquivos .jar)
+    echo " > Argumentos Java: $JAVA_ARGS"
+    
+    if [ -n "$CMD_PREFIX" ]; then
+        exec $CMD_PREFIX "java -Xms${MIN_RAM} -Xmx${MAX_RAM} $JAVA_ARGS -jar \"$JAR_PATH\" $SERVER_ARGS || { echo 'Servidor crashou ou parou.'; read -p 'Pressione Enter para fechar...' ; }"
+    else
+        java -Xms"${MIN_RAM}" -Xmx"${MAX_RAM}" $JAVA_ARGS -jar "$JAR_PATH" $SERVER_ARGS
+    fi
 fi
