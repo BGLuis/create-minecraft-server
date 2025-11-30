@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Garante que o script execute no diretório onde ele está localizado
+cd "$(dirname "$0")"
+
 CONFIG_FILE="server.config"
 
 if [ ! -f "$CONFIG_FILE" ]; then
