@@ -35,7 +35,7 @@ if [ -f "startserver.sh" ]; then
     done < "$CACHE_CONFIG_FILE"
 
     # Define JAR_PATH como o script
-    JAR_PATH=$(readlink -f "startserver.sh")
+    JAR_PATH="./startserver.sh"
     echo "JAR_PATH=$JAR_PATH" >> "$CONFIG_FILE"
     # -----------------------------------------------
     
@@ -129,7 +129,7 @@ if [ -f "install.sh" ]; then
         fi
         
         if [ -n "$START_SCRIPT" ]; then
-            JAR_PATH=$(readlink -f "$START_SCRIPT")
+            JAR_PATH="./$START_SCRIPT"
             echo "Script de inicialização detectado: $JAR_PATH"
             echo "JAR_PATH=$JAR_PATH" >> "$CONFIG_FILE"
         else
@@ -438,10 +438,7 @@ fi
 echo "Baixando para o cache: $CACHE_JAR..."
 curl -# -L -o "$CACHE_JAR" "$SERVER_JAR_URL"
 
-echo "Copiando do cache para o diretório atual..."
-cp "$CACHE_JAR" "$SERVER_JAR"
-
-JAR_PATH=$(readlink -f "$SERVER_JAR")
+JAR_PATH="./$SERVER_JAR"
 sed -i '/^JAR_PATH=/d' "$CONFIG_FILE"
 echo "JAR_PATH=$JAR_PATH" >> "$CONFIG_FILE"
 
