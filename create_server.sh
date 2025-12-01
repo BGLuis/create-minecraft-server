@@ -21,6 +21,7 @@ fi
 if [ ! -d "$TARGET_DIR" ]; then
     echo "O diretório '$TARGET_DIR' não existe. Criando..."
     mkdir -p "$TARGET_DIR"
+    chmod 777 "$TARGET_DIR"
 else
     echo "O diretório '$TARGET_DIR' já existe."
 fi
@@ -30,12 +31,12 @@ echo "Copiando arquivos de '$SOURCE_DIR' para '$TARGET_DIR' நான"
 
 if [ -f "$SOURCE_DIR/download_server.sh" ]; then
     cp "$SOURCE_DIR/download_server.sh" "$TARGET_DIR/"
-    
+
     # Modifica o script copiado para usar o cache centralizado
     # Substitui os caminhos de cache pelo caminho absoluto do SOURCE_DIR
     sed -i "s|CACHE_CONFIG_DIR=\"cache/config\"|CACHE_CONFIG_DIR=\"$SOURCE_DIR/cache/config\"|g" "$TARGET_DIR/download_server.sh"
     sed -i "s|CACHE_DIR=\"cache/jar\"|CACHE_DIR=\"$SOURCE_DIR/cache/jar\"|g" "$TARGET_DIR/download_server.sh"
-    
+
     echo " > download_server.sh configurado com cache central."
 else
     echo "Aviso: download_server.sh não encontrado em '$SOURCE_DIR'."
