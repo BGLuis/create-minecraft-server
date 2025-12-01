@@ -35,28 +35,32 @@ fi
 SESSION_NAME="mc-server"
 CMD_PREFIX=""
 
-if command -v screen &> /dev/null; then
-    # Verifica se a sessão já existe
-    if screen -list | grep -q "\.${SESSION_NAME}"; then
-        echo "Servidor já está rodando na sessão '$SESSION_NAME'."
-        echo "Conectando ao console... (Use 'Ctrl+A, D' para sair sem parar o servidor)"
-        sleep 2
-        exec screen -x "$SESSION_NAME"
-    fi
+# Só tenta usar screen se NÃO estivermos no modo serviço
+if [ -z "$SERVICE_MODE" ]; then
 
-    echo "Iniciando nova sessão 'screen' para o servidor..."
-    # Define o prefixo para rodar dentro do screen
-    # Usa 'bash -c' para permitir comandos compostos (pause no final)
-    CMD_PREFIX="screen -S $SESSION_NAME bash -c"
-else
-    echo "Aviso: 'screen' não instalado."
-    echo "O servidor rodará em primeiro plano. Se fechar este terminal, o servidor irá parar."
+    if command -v screen &> /dev/null; then
+        # Verifica se a sessão já existe
+        if screen -list | grep -q "\.${SESSION_NAME}"; then
+            echo "Servidor já está rodando na sessão '$SESSION_NAME'."
+            echo "Conectando ao console... (Use 'Ctrl+A, D' para sair sem parar o servidor)"
+            sleep 2
+            exec screen -x "$SESSION_NAME"
+        fi
 
-    # Tenta detectar se já está rodando sem screen (apenas check simples)
-    if pgrep -f "$(basename "$JAR_PATH")" > /dev/null; then
-        echo "AVISO: Parece que o servidor já está rodando em outro processo."
-        echo "Continuar pode causar corrupção de dados. Pressione Ctrl+C para cancelar em 5 segundos."
-        sleep 5
+        echo "Iniciando nova sessão 'screen' para o servidor..."
+        # Define o prefixo para rodar dentro do screen
+        # Usa 'bash -c' para permitir comandos compostos (pause no final)
+        CMD_PREFIX="screen -S $SESSION_NAME bash -c"
+    else
+        echo "Aviso: 'screen' não instalado."
+        echo "O servidor rodará em primeiro plano. Se fechar este terminal, o servidor irá parar."
+
+        # Tenta detectar se já está rodando sem screen (apenas check simples)
+        if pgrep -f "$(basename "$JAR_PATH")" > /dev/null; then
+            echo "AVISO: Parece que o servidor já está rodando em outro processo."
+            echo "Continuar pode causar corrupção de dados. Pressione Ctrl+C para cancelar em 5 segundos."
+            sleep 5
+        fi
     fi
 fi
 
