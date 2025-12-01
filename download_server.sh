@@ -62,7 +62,7 @@ if [ -f "startserver.sh" ]; then
         ./startserver.sh
     fi
     
-    echo "Instalação concluída. Use ./init-server.sh para iniciar."
+    echo "Instalação concluída. Use ./init_server.sh para iniciar."
     exit 0
 fi
 
@@ -140,7 +140,7 @@ if [ -f "install.sh" ]; then
         echo "Erro: O binário do instalador (ftb-server-installer) não foi encontrado após rodar install.sh."
     fi
 
-    echo "Processo de instalação finalizado. Use ./init-server.sh para iniciar."
+    echo "Processo de instalação finalizado. Use ./init_server.sh para iniciar."
     exit 0
 fi
 

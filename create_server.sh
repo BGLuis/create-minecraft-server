@@ -41,10 +41,10 @@ else
     echo "Aviso: download_server.sh não encontrado em '$SOURCE_DIR'."
 fi
 
-if [ -f "$SOURCE_DIR/init-server.sh" ]; then
-    cp "$SOURCE_DIR/init-server.sh" "$TARGET_DIR/"
+if [ -f "$SOURCE_DIR/init_server.sh" ]; then
+    cp "$SOURCE_DIR/init_server.sh" "$TARGET_DIR/"
 else
-    echo "Aviso: init-server.sh não encontrado em '$SOURCE_DIR'."
+    echo "Aviso: init_server.sh não encontrado em '$SOURCE_DIR'."
 fi
 
 # Cria um server.config vazio se não existir
@@ -57,7 +57,7 @@ fi
 
 # Define permissão de execução para os scripts copiados
 chmod +x "$TARGET_DIR/download_server.sh" 2>/dev/null
-chmod +x "$TARGET_DIR/init-server.sh" 2>/dev/null
+chmod +x "$TARGET_DIR/init_server.sh" 2>/dev/null
 
 echo "Operação concluída com sucesso!"
 echo "Para configurar seu servidor, vá para '$TARGET_DIR' e edite o arquivo server.config."
