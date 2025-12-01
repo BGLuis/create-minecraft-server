@@ -332,7 +332,7 @@ if [ -f "$CACHE_JAR" ]; then
     echo "Copiando para o diretório atual..."
     cp "$CACHE_JAR" "$SERVER_JAR"
     
-    JAR_PATH=$(readlink -f "$SERVER_JAR")
+    JAR_PATH="./$SERVER_JAR"
     sed -i '/^JAR_PATH=/d' "$CONFIG_FILE"
     echo "JAR_PATH=$JAR_PATH" >> "$CONFIG_FILE"
     
