@@ -29,17 +29,17 @@ fi
 # Copia os arquivos
 echo "Copiando arquivos de '$SOURCE_DIR' para '$TARGET_DIR' நான"
 
-if [ -f "$SOURCE_DIR/download_server.sh" ]; then
-    cp "$SOURCE_DIR/download_server.sh" "$TARGET_DIR/"
+if [ -f "$SOURCE_DIR/download-server.sh" ]; then
+    cp "$SOURCE_DIR/download-server.sh" "$TARGET_DIR/"
 
     # Modifica o script copiado para usar o cache centralizado
     # Substitui os caminhos de cache pelo caminho absoluto do SOURCE_DIR
-    sed -i "s|CACHE_CONFIG_DIR=\"cache/config\"|CACHE_CONFIG_DIR=\"$SOURCE_DIR/cache/config\"|g" "$TARGET_DIR/download_server.sh"
-    sed -i "s|CACHE_DIR=\"cache/jar\"|CACHE_DIR=\"$SOURCE_DIR/cache/jar\"|g" "$TARGET_DIR/download_server.sh"
+    sed -i "s|CACHE_CONFIG_DIR=\"cache/config\"|CACHE_CONFIG_DIR=\"$SOURCE_DIR/cache/config\"|g" "$TARGET_DIR/download-server.sh"
+    sed -i "s|CACHE_DIR=\"cache/jar\"|CACHE_DIR=\"$SOURCE_DIR/cache/jar\"|g" "$TARGET_DIR/download-server.sh"
 
-    echo " > download_server.sh configurado com cache central."
+    echo " > download-server.sh configurado com cache central."
 else
-    echo "Aviso: download_server.sh não encontrado em '$SOURCE_DIR'."
+    echo "Aviso: download-server.sh não encontrado em '$SOURCE_DIR'."
 fi
 
 if [ -f "$SOURCE_DIR/init-server.sh" ]; then
@@ -57,7 +57,7 @@ else
 fi
 
 # Define permissão de execução para os scripts copiados
-chmod +x "$TARGET_DIR/download_server.sh" 2>/dev/null
+chmod +x "$TARGET_DIR/download-server.sh" 2>/dev/null
 chmod +x "$TARGET_DIR/init-server.sh" 2>/dev/null
 
 echo "Operação concluída com sucesso!"
